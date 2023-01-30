@@ -3,11 +3,12 @@ package main
 import (
 	"errors"
 
+	"github.com/pedro-git-projects/go-raycasting/cmd/game"
 	"github.com/pedro-git-projects/go-raycasting/cmd/player"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-func initializeWindow() (*sdl.Window, *sdl.Renderer, error) {
+func initializeWindow(g *game.Game) (*sdl.Window, *sdl.Renderer, error) {
 	err := sdl.Init(sdl.INIT_EVERYTHING)
 	if err != nil {
 		return nil, nil, errors.New("Failed to initialze SDL")
@@ -17,8 +18,8 @@ func initializeWindow() (*sdl.Window, *sdl.Renderer, error) {
 		"raycasting",
 		sdl.WINDOWPOS_CENTERED,
 		sdl.WINDOWPOS_CENTERED,
-		800,
-		600,
+		g.WindowWidth(),
+		g.WindowHeight(),
 		sdl.WINDOW_BORDERLESS,
 	)
 	if err != nil {
@@ -38,9 +39,10 @@ func initializeWindow() (*sdl.Window, *sdl.Renderer, error) {
 	return window, rendeder, nil
 }
 
-func setup() *player.Player {
+func setup() (*player.Player, *game.Game) {
 	p := player.New(0, 0)
-	return p
+	g := game.Default()
+	return p, g
 }
 
 func processInput(running *bool) {
@@ -69,25 +71,37 @@ func render(r *sdl.Renderer, p *player.Player) {
 	r.Present()
 }
 
-func update(p *player.Player) {
+// TODO: fix get ticks passed
+func getTicksPassed(a, b uint64) bool {
+	r := ((b) - (a)) <= 0
+	return r
+}
+
+// Create frame independent movement
+func update(p *player.Player, g *game.Game) {
+	//	for !getTicksPassed(sdl.GetTicks64(), g.TicksLastFrame()+g.FrameTime()) {
+	//	}
+
+	//delta := (sdl.GetTicks64() - g.TicksLastFrame()) / 1000.0
+	g.SetTicksLastFrame(sdl.GetTicks64())
+
 	p.IncX(1)
 	p.IncY(1)
 }
 
 func main() {
-	w, r, err := initializeWindow()
+	p, g := setup()
+	w, r, err := initializeWindow(g)
 	if err != nil {
 		panic(err)
 	}
 	defer sdl.Quit()
 	defer w.Destroy()
 
-	p := setup()
-
 	running := true
 	for running {
 		processInput(&running)
-		update(p)
+		update(p, g)
 		render(r, p)
 	}
 }
