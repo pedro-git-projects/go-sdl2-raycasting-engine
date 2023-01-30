@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 
+	"github.com/pedro-git-projects/go-raycasting/cmd/player"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -37,6 +38,11 @@ func initializeWindow() (*sdl.Window, *sdl.Renderer, error) {
 	return window, rendeder, nil
 }
 
+func setup() *player.Player {
+	p := player.New(0, 0)
+	return p
+}
+
 func processInput(running *bool) {
 	for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 		switch i := event.(type) {
@@ -52,10 +58,20 @@ func processInput(running *bool) {
 	}
 }
 
-func render(r *sdl.Renderer) {
+func render(r *sdl.Renderer, p *player.Player) {
 	r.SetDrawColor(0, 0, 0, 255)
 	r.Clear()
+
+	r.SetDrawColor(255, 255, 0, 255)
+	rect := sdl.Rect{int32(p.X()), int32(p.Y()), 20, 20}
+	r.FillRect(&rect)
+
 	r.Present()
+}
+
+func update(p *player.Player) {
+	p.IncX(1)
+	p.IncY(1)
 }
 
 func main() {
@@ -66,9 +82,12 @@ func main() {
 	defer sdl.Quit()
 	defer w.Destroy()
 
+	p := setup()
+
 	running := true
 	for running {
 		processInput(&running)
-		render(r)
+		update(p)
+		render(r, p)
 	}
 }
