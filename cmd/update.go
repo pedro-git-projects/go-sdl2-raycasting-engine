@@ -4,12 +4,13 @@ import (
 	"time"
 
 	"github.com/pedro-git-projects/go-raycasting/cmd/game"
+	"github.com/pedro-git-projects/go-raycasting/cmd/player"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 // update gets the durations since SDL started and compensates for the
 // difference between the actual framerate and the frametime, or time between frames// by wasting time away when the game is running too fast
-func update(g *game.Game) {
+func update(g *game.Game, p *player.Player) {
 	g.SetTicksLastFrame(sdl.GetTicks64())
 
 	delta := (sdl.GetTicks64() - g.TicksLastFrame())
@@ -17,4 +18,6 @@ func update(g *game.Game) {
 		sleep := (g.FrameTime() - delta) * uint64(time.Millisecond)
 		time.Sleep(time.Duration(sleep))
 	}
+
+	p.Move()
 }

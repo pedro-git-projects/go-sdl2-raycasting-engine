@@ -15,8 +15,8 @@ func main() {
 
 	running := true
 	for running {
-		processInput(&running)
-		update(g)
+		processInput(&running, p)
+		update(g, p)
 		render(r, g, p)
 	}
 }

@@ -1,24 +1,29 @@
 package player
 
 import (
+	"errors"
+	"fmt"
 	"math"
+	"strings"
 
 	"github.com/veandco/go-sdl2/sdl"
 )
+
+// TODO fix palyer rendering
 
 type turnDirection int
 type walkDirection int
 
 const (
-	turnNeutral turnDirection = iota
-	left
-	right
+	turnNeutral turnDirection = 0
+	left        turnDirection = 1
+	right       turnDirection = -1
 )
 
 const (
-	walkNeutral walkDirection = iota
-	foward
-	backward
+	walkNeutral walkDirection = 0
+	foward      walkDirection = 1
+	backward    walkDirection = -1
 )
 
 // the player type represents the player game object
@@ -39,8 +44,8 @@ func New(x, y float64) *Player {
 	p := &Player{
 		x:             x,
 		y:             y,
-		width:         5,
-		height:        5,
+		width:         1,
+		height:        1,
 		turnDirection: turnNeutral,
 		walkDirection: walkNeutral,
 		rotationAngle: math.Pi / 2,
@@ -92,4 +97,49 @@ func (p *Player) Render(r *sdl.Renderer) {
 		H: int32(p.height * p.minimapScale),
 	}
 	r.FillRect(&playerRect)
+	r.DrawLine(
+		int32(p.minimapScale*p.x),
+		int32(p.minimapScale*p.y),
+		int32(p.minimapScale*(p.x+math.Cos(p.rotationAngle)*40)),
+		int32(p.minimapScale*(p.x+math.Sin(p.rotationAngle)*40)),
+	)
+}
+
+func (p *Player) SetWalkDirection(direction string) error {
+	switch strings.ToLower(direction) {
+	case "neutral":
+		p.walkDirection = walkNeutral
+	case "foward":
+		p.walkDirection = foward
+	case "backward":
+		p.walkDirection = backward
+	default:
+		err := fmt.Sprintf("Unknown walk direction %s", direction)
+		return errors.New(err)
+	}
+	return nil
+}
+
+func (p *Player) SetTurnDirection(direction string) error {
+	switch strings.ToLower(direction) {
+	case "neutral":
+		p.turnDirection = turnNeutral
+	case "left":
+		p.turnDirection = left
+	case "right":
+		p.turnDirection = right
+	default:
+		err := fmt.Sprintf("Unknown walk direction %s", direction)
+		return errors.New(err)
+	}
+	return nil
+}
+
+func (p *Player) Move() {
+	p.rotationAngle = float64(p.turnDirection) * p.turnSpeed
+	distance := float64(p.walkDirection) * p.walkSpeed
+	newX := p.x + math.Cos(p.rotationAngle)*distance
+	newY := p.y + math.Sin(p.rotationAngle)*distance
+	p.SetX(newX)
+	p.SetY(newY)
 }
