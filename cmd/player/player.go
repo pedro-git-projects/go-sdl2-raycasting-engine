@@ -16,8 +16,8 @@ type walkDirection int
 
 const (
 	turnNeutral turnDirection = 0
-	left        turnDirection = 1
-	right       turnDirection = -1
+	left        turnDirection = -1
+	right       turnDirection = 1
 )
 
 const (
@@ -100,8 +100,8 @@ func (p *Player) Render(r *sdl.Renderer) {
 	r.DrawLine(
 		int32(p.minimapScale*p.x),
 		int32(p.minimapScale*p.y),
-		int32(p.minimapScale*(p.x+math.Cos(p.rotationAngle)*40)),
-		int32(p.minimapScale*(p.x+math.Sin(p.rotationAngle)*40)),
+		int32(p.minimapScale*p.x+math.Cos(p.rotationAngle)*40),
+		int32(p.minimapScale*p.y+math.Sin(p.rotationAngle)*40),
 	)
 }
 
@@ -136,10 +136,11 @@ func (p *Player) SetTurnDirection(direction string) error {
 }
 
 func (p *Player) Move() {
-	p.rotationAngle = float64(p.turnDirection) * p.turnSpeed
+	p.rotationAngle += float64(p.turnDirection) * p.turnSpeed
 	distance := float64(p.walkDirection) * p.walkSpeed
-	newX := p.x + math.Cos(p.rotationAngle)*distance
-	newY := p.y + math.Sin(p.rotationAngle)*distance
+
+	newX := p.x + (math.Cos(p.rotationAngle))*distance
+	newY := p.y + (math.Sin(p.rotationAngle))*distance
 	p.SetX(newX)
 	p.SetY(newY)
 }
