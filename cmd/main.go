@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"time"
 
 	"github.com/pedro-git-projects/go-raycasting/cmd/game"
 	"github.com/pedro-git-projects/go-raycasting/cmd/player"
@@ -71,22 +72,19 @@ func render(r *sdl.Renderer, p *player.Player) {
 	r.Present()
 }
 
-// TODO: fix get ticks passed
-func getTicksPassed(a, b uint64) bool {
-	r := ((b) - (a)) <= 0
-	return r
-}
-
-// Create frame independent movement
+// update gets the durations since SDL started and compensates for the
+// difference between the actual framerate and the frametime, or time between frames// by wasting time away when the game is running too fast
 func update(p *player.Player, g *game.Game) {
-	//	for !getTicksPassed(sdl.GetTicks64(), g.TicksLastFrame()+g.FrameTime()) {
-	//	}
-
-	//delta := (sdl.GetTicks64() - g.TicksLastFrame()) / 1000.0
 	g.SetTicksLastFrame(sdl.GetTicks64())
 
-	p.IncX(1)
-	p.IncY(1)
+	delta := (sdl.GetTicks64() - g.TicksLastFrame())
+	if delta < g.FrameTime() {
+		sleep := (g.FrameTime() - delta) * uint64(time.Millisecond)
+		time.Sleep(time.Duration(sleep))
+	}
+
+	p.IncX(20)
+	p.IncY(20)
 }
 
 func main() {
