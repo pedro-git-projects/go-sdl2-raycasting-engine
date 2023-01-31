@@ -17,5 +17,5 @@ func update(g *game.Game, p *player.Player) {
 	}
 	deltaTime := (float64(sdl.GetTicks64() - g.TicksLastFrame())) / 1000.0
 	g.SetTicksLastFrame(sdl.GetTicks64())
-	p.Move(deltaTime)
+	p.Move(deltaTime, g)
 }

@@ -6,6 +6,7 @@ import (
 	"math"
 	"strings"
 
+	"github.com/pedro-git-projects/go-raycasting/cmd/game"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -133,11 +134,13 @@ func (p *Player) SetTurnDirection(direction string) error {
 	return nil
 }
 
-func (p *Player) Move(delta float64) {
+func (p *Player) Move(delta float64, g *game.Game) {
 	p.rotationAngle += float64(p.turnDirection) * p.turnSpeed * delta
 	distance := float64(p.walkDirection) * p.walkSpeed * delta
 	newX := p.x + (math.Cos(p.rotationAngle))*distance
 	newY := p.y + (math.Sin(p.rotationAngle))*distance
-	p.SetX(newX)
-	p.SetY(newY)
+	if !g.IsSolidCoordinate(newX, newY) {
+		p.SetX(newX)
+		p.SetY(newY)
+	}
 }

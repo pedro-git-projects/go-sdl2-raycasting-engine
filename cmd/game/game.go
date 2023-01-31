@@ -107,3 +107,17 @@ func (g *Game) RenderMap(r *sdl.Renderer) {
 		}
 	}
 }
+
+func (g *Game) IsSolidCoordinate(x, y float64) bool {
+	if x < 0 || x >= float64(g.cols)*float64(g.tileSize) || y < 0 || y >= float64(g.rows)*float64(g.tileSize) {
+		return true
+	}
+
+	indX := math.Floor(x / float64(g.tileSize))
+	indY := math.Floor(y / float64(g.tileSize))
+	if g.gameMap[int(indY)][int(indX)] != 0 {
+		return true
+	}
+
+	return false
+}
