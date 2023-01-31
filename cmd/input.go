@@ -19,7 +19,7 @@ func processInput(running *bool, player *player.Player) {
 				player.SetWalkDirection("foward")
 			}
 			if i.Type == sdl.KEYDOWN && i.Keysym.Sym == sdl.K_DOWN {
-				player.SetWalkDirection("down")
+				player.SetWalkDirection("backward")
 			}
 			if i.Type == sdl.KEYDOWN && i.Keysym.Sym == sdl.K_RIGHT {
 				player.SetTurnDirection("right")
