@@ -1,23 +1,63 @@
 package game
 
+import (
+	"math"
+
+	"github.com/veandco/go-sdl2/sdl"
+)
+
 type Game struct {
 	windowWidth    int32
 	windowHeight   int32
+	tileSize       int32
+	rows           int32
+	cols           int32
+	fovAngle       float64
+	rays           int32
 	fps            uint64
 	frameTime      uint64
 	ticksLastFrame uint64
+	gameMap        [][]int32
 }
 
 func Default() *Game {
 	framesPerSecond := uint64(30)
+	rows := int32(13)
+	cols := int32(20)
+	tileSiz := int32(64)
 	g := &Game{
-		windowWidth:    800,
-		windowHeight:   600,
+		windowWidth:    cols * tileSiz,
+		windowHeight:   rows * tileSiz,
+		tileSize:       tileSiz,
+		rows:           rows,
+		cols:           cols,
+		rays:           cols * tileSiz,
+		fovAngle:       (60 * (math.Pi / 180)),
+		gameMap:        initializeGameMap(),
 		fps:            framesPerSecond,
 		frameTime:      1000 / framesPerSecond,
 		ticksLastFrame: 0,
 	}
 	return g
+}
+
+func initializeGameMap() [][]int32 {
+	m := [][]int32{
+		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+		{1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1},
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1},
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+	}
+	return m
 }
 
 func (g Game) WindowWidth() int32 {
@@ -38,4 +78,30 @@ func (g Game) TicksLastFrame() uint64 {
 
 func (g *Game) SetTicksLastFrame(t uint64) {
 	g.ticksLastFrame = t
+}
+
+func (g *Game) RenderMap(r *sdl.Renderer) {
+	for i := int32(0); i < g.rows; i++ {
+		for j := int32(0); j < g.cols; j++ {
+
+			tileX := j * g.tileSize
+			tileY := i * g.tileSize
+
+			var tileColor uint8
+			if g.gameMap[i][j] != 0 {
+				tileColor = 255
+			} else {
+				tileColor = 0
+			}
+
+			r.SetDrawColor(tileColor, tileColor, tileColor, 255)
+			mapTileRect := sdl.Rect{
+				X: tileX,
+				Y: tileY,
+				W: g.tileSize,
+				H: g.tileSize,
+			}
+			r.FillRect(&mapTileRect)
+		}
+	}
 }

@@ -1,47 +1,78 @@
 package player
 
+import "math"
+
+type turnDirection int
+type walkDirection int
+
+const (
+	turnNeutral turnDirection = iota
+	left
+	right
+)
+
+const (
+	walkNeutral walkDirection = iota
+	foward
+	backward
+)
+
 // the player type represents the player game object
 type Player struct {
-	x int
-	y int
+	x             float64
+	y             float64
+	width         float64
+	height        float64
+	turnDirection turnDirection
+	walkDirection walkDirection
+	rotationAngle float64
+	walkSpeed     float64
+	turnSpeed     float64
 }
 
-func New(x, y int) *Player {
+func New(x, y float64) *Player {
 	p := &Player{
-		x: x,
-		y: y,
+		x:             x,
+		y:             y,
+		width:         5,
+		height:        5,
+		turnDirection: turnNeutral,
+		walkDirection: walkNeutral,
+		rotationAngle: math.Pi / 2,
+		walkSpeed:     100,
+		turnSpeed:     45 * (math.Pi / 180),
 	}
 	return p
 }
 
-func (p Player) X() int {
+func (p Player) X() float64 {
 	return p.x
 }
 
-func (p Player) Y() int {
+func (p Player) Y() float64 {
 	return p.y
 }
 
-func (p *Player) SetX(x int) {
+func (p *Player) SetX(x float64) {
 	p.x = x
 }
 
-func (p *Player) SetY(y int) {
+func (p *Player) SetY(y float64) {
 	p.y = y
 }
 
-func (p *Player) IncX(x int) {
+func (p *Player) IncX(x float64) {
 	p.x += x
 }
 
-func (p *Player) IncY(y int) {
+func (p *Player) IncY(y float64) {
 	p.y += y
 }
 
-func (p *Player) DecX(x int) {
+func (p *Player) DecX(x float64) {
 	p.x -= x
 }
 
-func (p *Player) DecY(y int) {
+func (p *Player) DecY(y float64) {
 	p.y -= y
 }
