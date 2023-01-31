@@ -1,6 +1,10 @@
 package player
 
-import "math"
+import (
+	"math"
+
+	"github.com/veandco/go-sdl2/sdl"
+)
 
 type turnDirection int
 type walkDirection int
@@ -28,6 +32,7 @@ type Player struct {
 	rotationAngle float64
 	walkSpeed     float64
 	turnSpeed     float64
+	minimapScale  float64
 }
 
 func New(x, y float64) *Player {
@@ -41,6 +46,7 @@ func New(x, y float64) *Player {
 		rotationAngle: math.Pi / 2,
 		walkSpeed:     100,
 		turnSpeed:     45 * (math.Pi / 180),
+		minimapScale:  0.3,
 	}
 	return p
 }
@@ -75,4 +81,15 @@ func (p *Player) DecX(x float64) {
 
 func (p *Player) DecY(y float64) {
 	p.y -= y
+}
+
+func (p *Player) Render(r *sdl.Renderer) {
+	r.SetDrawColor(255, 255, 255, 255)
+	playerRect := sdl.Rect{
+		X: int32(p.x * p.minimapScale),
+		Y: int32(p.y * p.minimapScale),
+		W: int32(p.width * p.minimapScale),
+		H: int32(p.height * p.minimapScale),
+	}
+	r.FillRect(&playerRect)
 }

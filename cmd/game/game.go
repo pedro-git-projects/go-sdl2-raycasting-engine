@@ -12,6 +12,7 @@ type Game struct {
 	tileSize       int32
 	rows           int32
 	cols           int32
+	minimapScale   float32
 	fovAngle       float64
 	rays           int32
 	fps            uint64
@@ -31,6 +32,7 @@ func Default() *Game {
 		tileSize:       tileSiz,
 		rows:           rows,
 		cols:           cols,
+		minimapScale:   0.3,
 		rays:           cols * tileSiz,
 		fovAngle:       (60 * (math.Pi / 180)),
 		gameMap:        initializeGameMap(),
@@ -96,10 +98,10 @@ func (g *Game) RenderMap(r *sdl.Renderer) {
 
 			r.SetDrawColor(tileColor, tileColor, tileColor, 255)
 			mapTileRect := sdl.Rect{
-				X: tileX,
-				Y: tileY,
-				W: g.tileSize,
-				H: g.tileSize,
+				X: int32(float32(tileX) * g.minimapScale),
+				Y: int32(float32(tileY) * g.minimapScale),
+				W: int32(float32(g.tileSize) * g.minimapScale),
+				H: int32(float32(g.tileSize) * g.minimapScale),
 			}
 			r.FillRect(&mapTileRect)
 		}
