@@ -9,8 +9,6 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-// TODO fix palyer rendering
-
 type turnDirection int
 type walkDirection int
 
@@ -135,10 +133,9 @@ func (p *Player) SetTurnDirection(direction string) error {
 	return nil
 }
 
-func (p *Player) Move() {
-	p.rotationAngle += float64(p.turnDirection) * p.turnSpeed
-	distance := float64(p.walkDirection) * p.walkSpeed
-
+func (p *Player) Move(delta float64) {
+	p.rotationAngle += float64(p.turnDirection) * p.turnSpeed * delta
+	distance := float64(p.walkDirection) * p.walkSpeed * delta
 	newX := p.x + (math.Cos(p.rotationAngle))*distance
 	newY := p.y + (math.Sin(p.rotationAngle))*distance
 	p.SetX(newX)
