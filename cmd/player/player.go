@@ -87,6 +87,10 @@ func (p *Player) DecY(y float64) {
 	p.y -= y
 }
 
+func (p Player) RotationAngle() float64 {
+	return p.rotationAngle
+}
+
 func (p *Player) Render(r *sdl.Renderer) {
 	r.SetDrawColor(255, 255, 255, 255)
 	playerRect := sdl.Rect{
