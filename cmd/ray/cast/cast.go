@@ -10,7 +10,7 @@ import (
 )
 
 func CastRay(angle float64, rayId int, g *game.Game, p *player.Player) {
-	g.Rays()[rayId] = *ray.New(angle)
+	g.Rays()[rayId] = *ray.New(angle) // constructor sanitizes angle
 	ray := g.Rays()[rayId]
 
 	// closest y-coordinate to the horizontal grid intersection
@@ -53,7 +53,7 @@ func CastRay(angle float64, rayId int, g *game.Game, p *player.Player) {
 		if g.IsSolidCoordinate(xToCheck, yToCheck) {
 			horzXWallCollision = nextHorzXCollision
 			horzYWallCollision = nextHorzYCollision
-			horzWallContent = g.GameMap()[int32(math.Floor(yToCheck/float64(g.TileSize())))][int32(math.Floor(xToCheck/float64(g.TileSize())))]
+			horzWallContent = g.GameMap()[int(math.Floor(yToCheck/float64(g.TileSize())))][int(math.Floor(xToCheck/float64(g.TileSize())))]
 			foundHorzCollision = true
 			break
 		} else {
@@ -67,7 +67,7 @@ func CastRay(angle float64, rayId int, g *game.Game, p *player.Player) {
 		xIntersection += float64(g.TileSize())
 	}
 
-	yIntersection = p.X() + (xIntersection-p.X())*math.Tan(ray.Angle())
+	yIntersection = p.Y() + (xIntersection-p.X())*math.Tan(ray.Angle())
 
 	var vertXWallCollision float64
 	var vertYWallCollision float64
@@ -99,10 +99,9 @@ func CastRay(angle float64, rayId int, g *game.Game, p *player.Player) {
 		if g.IsSolidCoordinate(xToCheck, yToCheck) {
 			vertXWallCollision = nextVertXCollision
 			vertYWallCollision = nextVertYCollision
-			vertWallContent = g.GameMap()[int32(yToCheck/float64(g.TileSize()))][int32(xToCheck/float64(g.TileSize()))]
+			vertWallContent = g.GameMap()[int(yToCheck/float64(g.TileSize()))][int(xToCheck/float64(g.TileSize()))]
 			foundVertCollision = true
 			break
-
 		} else {
 			nextVertXCollision += float64(xStep)
 			nextVertYCollision += float64(yStep)
