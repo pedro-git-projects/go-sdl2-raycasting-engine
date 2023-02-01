@@ -19,12 +19,13 @@ type Ray struct {
 
 // New creates a a pointer to a ray with normalized angle and booleans to its facing diretction
 func New(angle float64) *Ray {
-	down := isFacingDown(angle)
+	norm := normalizeAngle(angle)
+	down := isFacingDown(norm)
 	up := !down
-	right := isFacingRight(angle)
+	right := isFacingRight(norm)
 	left := !right
 	r := &Ray{
-		angle:         normalizeAngle(angle),
+		angle:         norm,
 		isFacingUp:    up,
 		isFacingDown:  down,
 		isFacingRight: right,
@@ -33,10 +34,7 @@ func New(angle float64) *Ray {
 	return r
 }
 
-/*
-	Accessors
-*/
-
+// Accessors
 func (r Ray) IsFacingDown() bool {
 	return r.isFacingDown
 }

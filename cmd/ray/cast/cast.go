@@ -62,17 +62,18 @@ func CastRay(angle float64, rayId int, g *game.Game, p *player.Player) {
 		}
 	}
 
+	// Starting vertical calculations
+	var vertXWallCollision float64
+	var vertYWallCollision float64
+	var vertWallContent int32
+	foundVertCollision := false
+
 	xIntersection = math.Floor(p.X()/float64(g.TileSize())) * float64(g.TileSize())
 	if ray.IsFacingRight() {
 		xIntersection += float64(g.TileSize())
 	}
 
 	yIntersection = p.Y() + (xIntersection-p.X())*math.Tan(ray.Angle())
-
-	var vertXWallCollision float64
-	var vertYWallCollision float64
-	var vertWallContent int32
-	foundVertCollision := false
 
 	xStep = float64(g.TileSize())
 	if ray.IsFacingLeft() {
