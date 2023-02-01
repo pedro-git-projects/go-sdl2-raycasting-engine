@@ -19,8 +19,8 @@ type Ray struct {
 
 // New creates a a pointer to a ray with normalized angle and booleans to its facing diretction
 func New(angle float64) *Ray {
-	up := isFacingUp(angle)
-	down := !up
+	down := isFacingDown(angle)
+	up := !down
 	right := isFacingRight(angle)
 	left := !right
 	r := &Ray{
@@ -74,8 +74,8 @@ func normalizeAngle(angle float64) float64 {
 	return angle
 }
 
-// isFacingUp returns true if an angle is facing up, false otherwise
-func isFacingUp(angle float64) bool {
+// isFacingDown returns true if an angle is facing up, false otherwise
+func isFacingDown(angle float64) bool {
 	if angle > 0 && angle < math.Pi {
 		return true
 	}
@@ -91,15 +91,8 @@ func isFacingRight(angle float64) bool {
 }
 
 func (r *Ray) Distance() float64 {
-	return r.Distance()
+	return r.distance
 }
-
-// func (r *Ray) closestYIntersection(rayID int, g *game.Game, p *player.Player) {
-// 	yIntersection := math.Floor(p.Y()/float64(g.TileSize())) * float64(g.TileSize())
-// 	if r.isFacingDown {
-// 		yIntersection += float64(g.TileSize())
-// 	}
-// }
 
 func (r *Ray) SetAngle(angle float64) {
 	r.angle = angle

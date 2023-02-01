@@ -12,6 +12,7 @@ import (
 func CastRay(angle float64, rayId int, g *game.Game, p *player.Player) {
 	g.Rays()[rayId] = *ray.New(angle)
 	ray := g.Rays()[rayId]
+
 	// closest y-coordinate to the horizontal grid intersection
 	yIntersection := math.Floor(p.Y()/float64(g.TileSize())) * float64(g.TileSize())
 	if ray.IsFacingDown() {
@@ -26,12 +27,12 @@ func CastRay(angle float64, rayId int, g *game.Game, p *player.Player) {
 	var horzWallContent int32
 	foundHorzCollision := false
 
-	yStep := g.TileSize()
+	yStep := float64(g.TileSize())
 	if ray.IsFacingUp() {
 		yStep *= -1
 	}
 
-	xStep := g.TileSize() / int32(math.Tan(ray.Angle()))
+	xStep := float64(g.TileSize()) / math.Tan(ray.Angle())
 	if ray.IsFacingLeft() && xStep > 0 {
 		xStep *= -1
 	}
@@ -73,12 +74,12 @@ func CastRay(angle float64, rayId int, g *game.Game, p *player.Player) {
 	var vertWallContent int32
 	foundVertCollision := false
 
-	xStep = g.TileSize()
+	xStep = float64(g.TileSize())
 	if ray.IsFacingLeft() {
 		xStep *= -1
 	}
 
-	yStep = g.TileSize() * int32(math.Tan(ray.Angle()))
+	yStep = float64(g.TileSize()) * math.Tan(ray.Angle())
 	if ray.IsFacingUp() && yStep > 0 {
 		yStep *= -1
 	}
@@ -139,10 +140,7 @@ func distanceBetweenPoints(x0, x1, y0, y1 float64) float64 {
 
 func CastRays(g *game.Game, p *player.Player) {
 	for col := 0; col < int(g.NumRays()); col++ {
-		// TODO: player rotation angle is being divided by zero
-		// find where
-		angle := p.RotationAngle()
-		// p.RotationAngle() +	math.Atan((float64(col) - float64(g.NumRays())/2) / float64(g.DistanceProjectionPlane())))
+		angle := p.RotationAngle() + math.Atan((float64(col)-float64(g.NumRays())/2)/float64(g.DistanceProjectionPlane()))
 		CastRay(angle, col, g, p)
 	}
 }
