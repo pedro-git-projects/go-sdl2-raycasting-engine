@@ -6,7 +6,7 @@ import (
 
 func main() {
 	g, p := setup()
-	w, r, err := initializeWindow(g)
+	w, r, buff, err := initializeWindow(g)
 	if err != nil {
 		panic(err)
 	}
@@ -17,6 +17,6 @@ func main() {
 	for running {
 		processInput(&running, p)
 		update(g, p)
-		render(r, g, p)
+		render(r, g, p, buff)
 	}
 }

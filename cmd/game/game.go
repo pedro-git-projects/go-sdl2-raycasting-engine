@@ -3,22 +3,25 @@ package game
 import (
 	"math"
 
+	"github.com/pedro-git-projects/go-raycasting/cmd/ray"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 type Game struct {
-	windowWidth    int32
-	windowHeight   int32
-	tileSize       int32
-	rows           int32
-	cols           int32
-	minimapScale   float64
-	fovAngle       float64
-	rays           int32
-	fps            uint64
-	frameTime      uint64
-	ticksLastFrame uint64
-	gameMap        [][]int32
+	windowWidth       int32
+	windowHeight      int32
+	tileSize          int32
+	rows              int32
+	cols              int32
+	minimapScale      float64
+	fovAngle          float64
+	numRays           int32
+	fps               uint64
+	frameTime         uint64
+	ticksLastFrame    uint64
+	gameMap           [][]int32
+	distanceProjPlane float64
+	rays              []ray.Ray
 }
 
 func Default() *Game {
@@ -26,19 +29,27 @@ func Default() *Game {
 	rows := int32(13)
 	cols := int32(20)
 	tileSiz := int32(64)
+	width := cols * tileSiz
+	height := rows * tileSiz
+	fov := (60 * (math.Pi / 180))
+	dist := ((float64(width) / 2) / (math.Tan(fov / 2)))
+	numRays := cols * tileSiz
+	rays := make([]ray.Ray, numRays)
 	g := &Game{
-		windowWidth:    cols * tileSiz,
-		windowHeight:   rows * tileSiz,
-		tileSize:       tileSiz,
-		rows:           rows,
-		cols:           cols,
-		minimapScale:   0.3,
-		rays:           cols * tileSiz,
-		fovAngle:       (60 * (math.Pi / 180)),
-		gameMap:        initializeGameMap(),
-		fps:            framesPerSecond,
-		frameTime:      1000 / framesPerSecond,
-		ticksLastFrame: 0,
+		windowWidth:       width,
+		windowHeight:      height,
+		tileSize:          tileSiz,
+		rows:              rows,
+		cols:              cols,
+		minimapScale:      0.3,
+		numRays:           cols * tileSiz,
+		fovAngle:          fov,
+		gameMap:           initializeGameMap(),
+		fps:               framesPerSecond,
+		frameTime:         1000 / framesPerSecond,
+		ticksLastFrame:    0,
+		distanceProjPlane: dist,
+		rays:              rays,
 	}
 	return g
 }
@@ -46,18 +57,18 @@ func Default() *Game {
 func initializeGameMap() [][]int32 {
 	m := [][]int32{
 		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 1},
 		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+		{1, 0, 0, 0, 2, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 0, 0, 0, 0, 1},
+		{1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+		{1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 1},
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 5},
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 5},
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 5},
+		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 5},
 	}
 	return m
 }
@@ -80,6 +91,42 @@ func (g Game) TicksLastFrame() uint64 {
 
 func (g *Game) SetTicksLastFrame(t uint64) {
 	g.ticksLastFrame = t
+}
+
+func (g Game) FOV() float64 {
+	return g.fovAngle
+}
+
+func (g Game) NumRays() int32 {
+	return g.numRays
+}
+
+func (g Game) Rays() []ray.Ray {
+	return g.rays
+}
+
+func (g Game) TileSize() int32 {
+	return g.tileSize
+}
+
+func (g Game) Cols() int32 {
+	return g.cols
+}
+
+func (g Game) Rows() int32 {
+	return g.rows
+}
+
+func (g Game) GameMap() [][]int32 {
+	return g.gameMap
+}
+
+func (g Game) DistanceProjectionPlane() float64 {
+	return g.distanceProjPlane
+}
+
+func (g Game) MinimapScale() float64 {
+	return g.minimapScale
 }
 
 func (g *Game) RenderMap(r *sdl.Renderer) {

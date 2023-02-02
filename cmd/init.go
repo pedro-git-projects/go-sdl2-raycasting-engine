@@ -3,15 +3,16 @@ package main
 import (
 	"errors"
 
+	"github.com/pedro-git-projects/go-raycasting/cmd/color"
 	"github.com/pedro-git-projects/go-raycasting/cmd/game"
 	"github.com/pedro-git-projects/go-raycasting/cmd/player"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-func initializeWindow(g *game.Game) (*sdl.Window, *sdl.Renderer, error) {
+func initializeWindow(g *game.Game) (*sdl.Window, *sdl.Renderer, *color.Buffer, error) {
 	err := sdl.Init(sdl.INIT_EVERYTHING)
 	if err != nil {
-		return nil, nil, errors.New("Failed to initialze SDL")
+		return nil, nil, nil, errors.New("Failed to initialze SDL")
 	}
 
 	window, err := sdl.CreateWindow(
@@ -23,20 +24,22 @@ func initializeWindow(g *game.Game) (*sdl.Window, *sdl.Renderer, error) {
 		sdl.WINDOW_BORDERLESS,
 	)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	rendeder, err := sdl.CreateRenderer(window, -1, 0)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	err = rendeder.SetDrawBlendMode(sdl.BLENDMODE_BLEND)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
-	return window, rendeder, nil
+	colorBuffer := color.New(rendeder, g)
+
+	return window, rendeder, colorBuffer, nil
 }
 
 func setup() (*game.Game, *player.Player) {
