@@ -9,11 +9,15 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+// Buffer represents a color buffer
 type Buffer struct {
 	color   []uint32
 	texture *sdl.Texture
 }
 
+// Creates a new Buffer with a streaming texture of the width and height of the window
+// and populates the color field with a slice that is wxh by wxh
+// Note that the slice is of type uint32 because that is the type assigned to colors in SDL
 func New(r *sdl.Renderer, g *game.Game) *Buffer {
 	color := make([]uint32, g.WindowWidth()*g.WindowHeight(), g.WindowHeight()*g.WindowWidth())
 	texture, _ := r.CreateTexture(
@@ -29,6 +33,7 @@ func New(r *sdl.Renderer, g *game.Game) *Buffer {
 	return b
 }
 
+// Render makes unsafe calls to sdl Texture Update and Copy via cgo
 func (b *Buffer) Render(g *game.Game, r *sdl.Renderer) {
 	b.texture.Update(
 		nil,
@@ -38,12 +43,16 @@ func (b *Buffer) Render(g *game.Game, r *sdl.Renderer) {
 	r.Copy(b.texture, nil, nil)
 }
 
-func (b *Buffer) ClearColorBuffer(color uint32, g *game.Game) {
+// Clear draws over the whole screen with an specified color
+func (b *Buffer) Clear(color uint32, g *game.Game) {
 	for i := 0; i < int(g.WindowWidth()*g.WindowHeight()); i++ {
 		b.color[i] = color
 	}
 }
 
+// Generate3DProjection accounts for the distortion by calculating the perpendicular distance between the player
+// and the collided pixel then calculates the projected top and bottom pixel positions before drawing a line there
+// it also uses the fact that the collision was vertical or horizontal to cast "shadows"
 func (b *Buffer) Generate3DProjection(g *game.Game, p *player.Player) {
 	for x := 0; x < int(g.NumRays()); x++ {
 		perpendicularDist := g.Rays()[x].Distance() * math.Cos(g.Rays()[x].Angle()-p.RotationAngle())
