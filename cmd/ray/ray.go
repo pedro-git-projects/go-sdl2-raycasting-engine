@@ -67,7 +67,7 @@ func (r Ray) YCollision() float64 {
 func normalizeAngle(angle float64) float64 {
 	angle = math.Remainder(angle, 2*math.Pi)
 	if angle < 0 {
-		angle = 2*math.Pi + angle
+		angle = (2 * math.Pi) + angle
 	}
 	return angle
 }

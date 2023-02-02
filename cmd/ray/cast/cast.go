@@ -13,6 +13,11 @@ func CastRay(angle float64, rayId int, g *game.Game, p *player.Player) {
 	g.Rays()[rayId] = *ray.New(angle) // constructor sanitizes angle
 	ray := g.Rays()[rayId]
 
+	var horzXWallCollision float64
+	var horzYWallCollision float64
+	var horzWallContent int32
+	foundHorzCollision := false
+
 	// closest y-coordinate to the horizontal grid intersection
 	yIntersection := math.Floor(p.Y()/float64(g.TileSize())) * float64(g.TileSize())
 	if ray.IsFacingDown() {
@@ -21,11 +26,6 @@ func CastRay(angle float64, rayId int, g *game.Game, p *player.Player) {
 
 	// closest x-coordinate to the horizontal grid intersection
 	xIntersection := p.X() + (yIntersection-p.Y())/math.Tan(ray.Angle())
-
-	var horzXWallCollision float64
-	var horzYWallCollision float64
-	var horzWallContent int32
-	foundHorzCollision := false
 
 	yStep := float64(g.TileSize())
 	if ray.IsFacingUp() {
