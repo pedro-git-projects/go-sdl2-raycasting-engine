@@ -2,6 +2,8 @@ package ray
 
 import (
 	"math"
+
+	"github.com/pedro-git-projects/go-raycasting/cmd/utils"
 )
 
 type Ray struct {
@@ -19,13 +21,13 @@ type Ray struct {
 
 // New creates a a pointer to a ray with normalized angle and booleans to its facing diretction
 func New(angle float64) *Ray {
-	norm := normalizeAngle(angle)
-	down := isFacingDown(norm)
+	utils.NormalizeAngle(&angle)
+	down := isFacingDown(angle)
 	up := !down
-	right := isFacingRight(norm)
+	right := isFacingRight(angle)
 	left := !right
 	r := &Ray{
-		angle:         norm,
+		angle:         angle,
 		isFacingUp:    up,
 		isFacingDown:  down,
 		isFacingRight: right,
@@ -65,15 +67,6 @@ func (r Ray) YCollision() float64 {
 
 func (r Ray) IsVerticalCollision() bool {
 	return r.isVerticalCollision
-}
-
-// normalizeAngle normalizes an angle in radians to an absolute angle
-func normalizeAngle(angle float64) float64 {
-	angle = math.Remainder(angle, 2*math.Pi)
-	if angle < 0 {
-		angle = (2 * math.Pi) + angle
-	}
-	return angle
 }
 
 // isFacingDown returns true if an angle is facing up, false otherwise
