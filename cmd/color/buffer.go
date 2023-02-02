@@ -13,7 +13,6 @@ type Buffer struct {
 }
 
 func New(r *sdl.Renderer, g *game.Game) *Buffer {
-	// maybe come back and remove multiplication
 	color := make([]uint32, g.WindowWidth()*g.WindowHeight(), g.WindowHeight()*g.WindowWidth())
 	texture, _ := r.CreateTexture(
 		sdl.PIXELFORMAT_ARGB8888,
@@ -41,4 +40,7 @@ func (b *Buffer) ClearColorBuffer(color uint32, g *game.Game) {
 	for i := 0; i < int(g.WindowWidth()*g.WindowHeight()); i++ {
 		b.color[i] = color
 	}
+}
+
+func Generate3DProjection() {
 }
