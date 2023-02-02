@@ -77,7 +77,7 @@ func (p Player) RotationAngle() float64 {
 	return p.rotationAngle
 }
 
-/* Setters */
+/* Mutators */
 
 func (p *Player) SetX(x float64) {
 	p.x = x
