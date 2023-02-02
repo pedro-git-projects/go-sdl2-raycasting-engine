@@ -54,27 +54,39 @@ func (b *Buffer) Clear(color uint32, g *game.Game) {
 // and the collided pixel then calculates the projected top and bottom pixel positions before drawing a line there
 // it also uses the fact that the collision was vertical or horizontal to cast "shadows"
 func (b *Buffer) Generate3DProjection(g *game.Game, p *player.Player) {
-	for x := 0; x < int(g.NumRays()); x++ {
-		perpendicularDist := g.Rays()[x].Distance() * math.Cos(g.Rays()[x].Angle()-p.RotationAngle())
-		projectedWallHeight := float64(g.TileSize()) / perpendicularDist * g.DistanceProjectionPlane()
-		topWallPixel := int(float64(g.WindowHeight())/2 - (projectedWallHeight / 2))
+	for x := int32(0); x < g.NumRays(); x++ {
+
+		perpDist := g.Rays()[x].Distance() * math.Cos(g.Rays()[x].Angle()-p.RotationAngle())
+		projWallHeight := (float64(g.TileSize()) / perpDist) * g.DistanceProjectionPlane()
+		wallSegmentHeight := int32(projWallHeight)
+
+		var topWallPixel int32 = (g.WindowHeight() / 2) - (wallSegmentHeight / 2)
 		if topWallPixel < 0 {
 			topWallPixel = 0
 		}
 
-		bottomWallPixel := int(float64(g.WindowHeight())/2 + (projectedWallHeight / 2))
-		if bottomWallPixel > int(g.WindowHeight()) {
-			bottomWallPixel = int(g.WindowHeight())
+		var bottomWallPixel int32 = (g.WindowHeight() / 2) + (wallSegmentHeight / 2)
+		if bottomWallPixel > g.WindowHeight() {
+			bottomWallPixel = g.WindowHeight()
 		}
 
+		// ceiling
+		for y := int32(0); y < topWallPixel; y++ {
+			b.color[(g.WindowWidth()*y)+x] = 0xFF444444
+		}
+
+		// wall
 		for y := topWallPixel; y < bottomWallPixel; y++ {
 			if g.Rays()[x].IsVerticalCollision() {
-				b.color[(int(g.WindowWidth())*y)+x] = 0xFFFFFFFF
+				b.color[(g.WindowWidth()*y)+x] = 0xFFFFFFFF
 			} else {
-				b.color[(int(g.WindowWidth())*y)+x] = 0xFFCCCCCC
+				b.color[(g.WindowWidth()*y)+x] = 0xFFCCCCCC
 			}
-
 		}
 
+		// floor
+		for y := bottomWallPixel; y < g.WindowHeight(); y++ {
+			b.color[(g.WindowWidth()*y)+x] = 0xFF777777
+		}
 	}
 }
