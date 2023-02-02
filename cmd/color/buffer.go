@@ -1,9 +1,11 @@
 package color
 
 import (
+	"math"
 	"unsafe"
 
 	"github.com/pedro-git-projects/go-raycasting/cmd/game"
+	"github.com/pedro-git-projects/go-raycasting/cmd/player"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -42,5 +44,28 @@ func (b *Buffer) ClearColorBuffer(color uint32, g *game.Game) {
 	}
 }
 
-func Generate3DProjection() {
+func (b *Buffer) Generate3DProjection(g *game.Game, p *player.Player) {
+	for x := 0; x < int(g.NumRays()); x++ {
+		perpendicularDist := g.Rays()[x].Distance() * math.Cos(g.Rays()[x].Angle()-p.RotationAngle())
+		projectedWallHeight := float64(g.TileSize()) / perpendicularDist * g.DistanceProjectionPlane()
+		topWallPixel := int(float64(g.WindowHeight())/2 - (projectedWallHeight / 2))
+		if topWallPixel < 0 {
+			topWallPixel = 0
+		}
+
+		bottomWallPixel := int(float64(g.WindowHeight())/2 + (projectedWallHeight / 2))
+		if bottomWallPixel > int(g.WindowHeight()) {
+			bottomWallPixel = int(g.WindowHeight())
+		}
+
+		for y := topWallPixel; y < bottomWallPixel; y++ {
+			if g.Rays()[x].IsVerticalCollision() {
+				b.color[(int(g.WindowWidth())*y)+x] = 0xFFFFFFFF
+			} else {
+				b.color[(int(g.WindowWidth())*y)+x] = 0xFFCCCCCC
+			}
+
+		}
+
+	}
 }

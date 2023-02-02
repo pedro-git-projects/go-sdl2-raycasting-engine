@@ -12,8 +12,10 @@ func render(r *sdl.Renderer, g *game.Game, p *player.Player, buf *color.Buffer) 
 	r.SetDrawColor(0, 0, 0, 255)
 	r.Clear()
 
+	buf.Generate3DProjection(g, p)
+
 	buf.Render(g, r)
-	buf.ClearColorBuffer(0xFF0000, g)
+	buf.ClearColorBuffer(0xFF000000, g)
 
 	g.RenderMap(r)
 	cast.RenderRays(r, g, p)

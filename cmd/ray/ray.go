@@ -63,6 +63,10 @@ func (r Ray) YCollision() float64 {
 	return r.yCollision
 }
 
+func (r Ray) IsVerticalCollision() bool {
+	return r.isVerticalCollision
+}
+
 // normalizeAngle normalizes an angle in radians to an absolute angle
 func normalizeAngle(angle float64) float64 {
 	angle = math.Remainder(angle, 2*math.Pi)
