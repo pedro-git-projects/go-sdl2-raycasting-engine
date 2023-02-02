@@ -10,37 +10,30 @@ func (app *App) processInput() {
 		switch i := event.(type) {
 		case *sdl.QuitEvent:
 			app.SetRunning(false)
-			break
 		case *sdl.KeyboardEvent:
-			if i.Keysym.Sym == sdl.K_ESCAPE {
-				app.SetRunning(false)
+			key := i.Keysym.Sym
+			if i.Type == sdl.KEYDOWN {
+				switch key {
+				case sdl.K_ESCAPE:
+					app.SetRunning(false)
+				case sdl.K_UP:
+					app.player.SetWalkDirection("foward")
+				case sdl.K_DOWN:
+					app.player.SetWalkDirection("backward")
+				case sdl.K_RIGHT:
+					app.player.SetTurnDirection("right")
+				case sdl.K_LEFT:
+					app.player.SetTurnDirection("left")
+				}
 			}
-			if i.Type == sdl.KEYDOWN && i.Keysym.Sym == sdl.K_UP {
-				app.player.SetWalkDirection("foward")
+			if i.Type == sdl.KEYUP {
+				switch key {
+				case sdl.K_UP, sdl.K_DOWN:
+					app.player.SetWalkDirection("neutral")
+				case sdl.K_RIGHT, sdl.K_LEFT:
+					app.player.SetTurnDirection("neutral")
+				}
 			}
-			if i.Type == sdl.KEYDOWN && i.Keysym.Sym == sdl.K_DOWN {
-				app.player.SetWalkDirection("backward")
-			}
-			if i.Type == sdl.KEYDOWN && i.Keysym.Sym == sdl.K_RIGHT {
-				app.player.SetTurnDirection("right")
-			}
-			if i.Type == sdl.KEYDOWN && i.Keysym.Sym == sdl.K_LEFT {
-				app.player.SetTurnDirection("left")
-			}
-
-			if i.Type == sdl.KEYUP && i.Keysym.Sym == sdl.K_UP {
-				app.player.SetWalkDirection("neutral")
-			}
-			if i.Type == sdl.KEYUP && i.Keysym.Sym == sdl.K_DOWN {
-				app.player.SetWalkDirection("neutral")
-			}
-			if i.Type == sdl.KEYUP && i.Keysym.Sym == sdl.K_RIGHT {
-				app.player.SetTurnDirection("neutral")
-			}
-			if i.Type == sdl.KEYUP && i.Keysym.Sym == sdl.K_LEFT {
-				app.player.SetTurnDirection("neutral")
-			}
-			break
 		}
 	}
 }
