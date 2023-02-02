@@ -7,6 +7,24 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+// default values
+const (
+	MinimapScaling float64 = 0.2
+	tileSize       int32   = 64
+	numRows        int32   = 13
+	numCols        int32   = 20
+	fov            float64 = 60 * (math.Pi / 180)
+	fps            uint64  = 30
+)
+
+var (
+	width             int32   = numCols * tileSize
+	height            int32   = numRows * tileSize
+	distanceProjPlane float64 = ((float64(width) / 2) / math.Tan(fov/2))
+	frameTime         uint64  = 1000 / fps
+	numRays                   = width
+)
+
 type Game struct {
 	windowWidth       int32
 	windowHeight      int32
@@ -24,36 +42,30 @@ type Game struct {
 	rays              []ray.Ray
 }
 
+// Default creates a game object with its fields populated by the
+// default constants and variables
 func Default() *Game {
-	framesPerSecond := uint64(30)
-	rows := int32(13)
-	cols := int32(20)
-	tileSiz := int32(64)
-	width := cols * tileSiz
-	height := rows * tileSiz
-	fov := 60 * (math.Pi / 180)
-	dist := ((float64(width) / 2) / (math.Tan(fov / 2)))
-	numRays := cols * tileSiz
 	rays := make([]ray.Ray, numRays)
 	g := &Game{
 		windowWidth:       width,
 		windowHeight:      height,
-		tileSize:          tileSiz,
-		rows:              rows,
-		cols:              cols,
-		minimapScale:      0.3,
+		tileSize:          tileSize,
+		rows:              numRows,
+		cols:              numCols,
+		minimapScale:      MinimapScaling,
 		numRays:           width,
 		fovAngle:          fov,
 		gameMap:           initializeGameMap(),
-		fps:               framesPerSecond,
-		frameTime:         1000 / framesPerSecond,
+		fps:               fps,
+		frameTime:         frameTime,
 		ticksLastFrame:    0,
-		distanceProjPlane: dist,
+		distanceProjPlane: distanceProjPlane,
 		rays:              rays,
 	}
 	return g
 }
 
+// initializeGameMap is a constructor helper for the gameMap field
 func initializeGameMap() [][]int32 {
 	m := [][]int32{
 		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -73,6 +85,8 @@ func initializeGameMap() [][]int32 {
 	return m
 }
 
+/* Accessors */
+
 func (g Game) WindowWidth() int32 {
 	return g.windowWidth
 }
@@ -87,10 +101,6 @@ func (g Game) FrameTime() uint64 {
 
 func (g Game) TicksLastFrame() uint64 {
 	return g.ticksLastFrame
-}
-
-func (g *Game) SetTicksLastFrame(t uint64) {
-	g.ticksLastFrame = t
 }
 
 func (g Game) FOV() float64 {
@@ -129,7 +139,17 @@ func (g Game) MinimapScale() float64 {
 	return g.minimapScale
 }
 
+// RenderMap renders the game minimap as well as a rectangle behind it
+// so as not to let the walls be seen through the tile gaps
 func (g *Game) RenderMap(r *sdl.Renderer) {
+	r.SetDrawColor(0, 0, 0, 255)
+	r.FillRect(&sdl.Rect{
+		X: 0,
+		Y: 0,
+		W: int32(g.MinimapScale() * (float64(g.cols) * float64(g.TileSize()))),
+		H: int32(g.MinimapScale() * (float64(g.Rows()) * float64(g.TileSize()))),
+	})
+
 	for i := int32(0); i < g.rows; i++ {
 		for j := int32(0); j < g.cols; j++ {
 
@@ -153,6 +173,9 @@ func (g *Game) RenderMap(r *sdl.Renderer) {
 	}
 }
 
+// IsSolidCoordinate tests if a point x,y is solid
+// that is, has collision. It will return true if the
+// unrwaped value is not zero or if the point is out of bounds
 func (g *Game) IsSolidCoordinate(x, y float64) bool {
 	if x < 0 || x >= float64(g.windowWidth) ||
 		y < 0 || y > float64(g.windowHeight) {
@@ -162,4 +185,9 @@ func (g *Game) IsSolidCoordinate(x, y float64) bool {
 	indX := int(math.Floor(x / float64(g.tileSize)))
 	indY := int(math.Floor(y / float64(g.tileSize)))
 	return g.gameMap[indY][indX] != 0
+}
+
+// Mutator
+func (g *Game) SetTicksLastFrame(t uint64) {
+	g.ticksLastFrame = t
 }

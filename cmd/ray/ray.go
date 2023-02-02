@@ -6,6 +6,7 @@ import (
 	"github.com/pedro-git-projects/go-raycasting/cmd/utils"
 )
 
+// Ray represents a casted ray
 type Ray struct {
 	angle               float64
 	xCollision          float64
@@ -36,7 +37,8 @@ func New(angle float64) *Ray {
 	return r
 }
 
-// Accessors
+/* Accessors  */
+
 func (r Ray) IsFacingDown() bool {
 	return r.isFacingDown
 }
@@ -69,25 +71,11 @@ func (r Ray) IsVerticalCollision() bool {
 	return r.isVerticalCollision
 }
 
-// isFacingDown returns true if an angle is facing up, false otherwise
-func isFacingDown(angle float64) bool {
-	if angle > 0 && angle < math.Pi {
-		return true
-	}
-	return false
-}
-
-// isFacingRight returns true if an angle is facing right, false otherwise
-func isFacingRight(angle float64) bool {
-	if angle < 0.5*math.Pi || angle > 1.5*math.Pi {
-		return true
-	}
-	return false
-}
-
-func (r *Ray) Distance() float64 {
+func (r Ray) Distance() float64 {
 	return r.distance
 }
+
+/* Mutators */
 
 func (r *Ray) SetAngle(angle float64) {
 	r.angle = angle
@@ -111,4 +99,20 @@ func (r *Ray) SetIsVerticalCollision(isVerticalCollision bool) {
 
 func (r *Ray) SetContent(content int32) {
 	r.content = content
+}
+
+// isFacingDown returns true if an angle is facing up, false otherwise
+func isFacingDown(angle float64) bool {
+	if angle > 0 && angle < math.Pi {
+		return true
+	}
+	return false
+}
+
+// isFacingRight returns true if an angle is facing right, false otherwise
+func isFacingRight(angle float64) bool {
+	if angle < 0.5*math.Pi || angle > 1.5*math.Pi {
+		return true
+	}
+	return false
 }

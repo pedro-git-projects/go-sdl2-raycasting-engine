@@ -58,7 +58,7 @@ func New(x, y float64) *Player {
 		rotationAngle: math.Pi / 2,
 		walkSpeed:     100,
 		turnSpeed:     45 * (math.Pi / 180),
-		minimapScale:  0.3,
+		minimapScale:  game.MinimapScaling,
 	}
 	return p
 }
