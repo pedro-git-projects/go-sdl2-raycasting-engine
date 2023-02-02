@@ -1,22 +1,17 @@
 package main
 
-import (
-	"github.com/veandco/go-sdl2/sdl"
-)
-
 func main() {
-	g, p := setup()
-	w, r, buff, err := initializeWindow(g)
+	app := newApp()
+	err := app.initialize()
 	if err != nil {
 		panic(err)
 	}
-	defer sdl.Quit()
-	defer w.Destroy()
 
-	running := true
-	for running {
-		processInput(&running, p)
-		update(g, p)
-		render(r, g, p, buff)
+	defer app.destructor()
+
+	for app.IsRunning() {
+		app.processInput()
+		app.update()
+		app.render()
 	}
 }

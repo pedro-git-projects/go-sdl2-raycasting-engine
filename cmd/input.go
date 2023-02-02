@@ -1,46 +1,39 @@
 package main
 
 import (
-	"github.com/pedro-git-projects/go-raycasting/cmd/player"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-func processInput(running *bool, player *player.Player) {
+// processInput processes player input using sdl's PollEvent function
+func (app *App) processInput() {
 	for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 		switch i := event.(type) {
 		case *sdl.QuitEvent:
-			*running = false
-			break
+			app.SetRunning(false)
 		case *sdl.KeyboardEvent:
-			if i.Keysym.Sym == sdl.K_ESCAPE {
-				*running = false
+			key := i.Keysym.Sym
+			if i.Type == sdl.KEYDOWN {
+				switch key {
+				case sdl.K_ESCAPE:
+					app.SetRunning(false)
+				case sdl.K_UP:
+					app.player.SetWalkDirection("foward")
+				case sdl.K_DOWN:
+					app.player.SetWalkDirection("backward")
+				case sdl.K_RIGHT:
+					app.player.SetTurnDirection("right")
+				case sdl.K_LEFT:
+					app.player.SetTurnDirection("left")
+				}
 			}
-			if i.Type == sdl.KEYDOWN && i.Keysym.Sym == sdl.K_UP {
-				player.SetWalkDirection("foward")
+			if i.Type == sdl.KEYUP {
+				switch key {
+				case sdl.K_UP, sdl.K_DOWN:
+					app.player.SetWalkDirection("neutral")
+				case sdl.K_RIGHT, sdl.K_LEFT:
+					app.player.SetTurnDirection("neutral")
+				}
 			}
-			if i.Type == sdl.KEYDOWN && i.Keysym.Sym == sdl.K_DOWN {
-				player.SetWalkDirection("backward")
-			}
-			if i.Type == sdl.KEYDOWN && i.Keysym.Sym == sdl.K_RIGHT {
-				player.SetTurnDirection("right")
-			}
-			if i.Type == sdl.KEYDOWN && i.Keysym.Sym == sdl.K_LEFT {
-				player.SetTurnDirection("left")
-			}
-
-			if i.Type == sdl.KEYUP && i.Keysym.Sym == sdl.K_UP {
-				player.SetWalkDirection("neutral")
-			}
-			if i.Type == sdl.KEYUP && i.Keysym.Sym == sdl.K_DOWN {
-				player.SetWalkDirection("neutral")
-			}
-			if i.Type == sdl.KEYUP && i.Keysym.Sym == sdl.K_RIGHT {
-				player.SetTurnDirection("neutral")
-			}
-			if i.Type == sdl.KEYUP && i.Keysym.Sym == sdl.K_LEFT {
-				player.SetTurnDirection("neutral")
-			}
-			break
 		}
 	}
 }

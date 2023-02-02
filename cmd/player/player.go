@@ -10,7 +10,10 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+// turnDirection is the type used in the enum for the player turn direction
 type turnDirection int
+
+// walkDirection is the type used in the enum for the player walk direction
 type walkDirection int
 
 const (
@@ -39,6 +42,11 @@ type Player struct {
 	minimapScale  float64
 }
 
+// New creates a pointer to a player in the x and y postion
+// with 1 pixel witdh and height
+// with neutral turn and walk diretion
+// 100 pixel walkspeed and 45 radians turning
+// the default minimapScaling is 0.3
 func New(x, y float64) *Player {
 	p := &Player{
 		x:             x,
@@ -55,6 +63,8 @@ func New(x, y float64) *Player {
 	return p
 }
 
+/* Accesssors */
+
 func (p Player) X() float64 {
 	return p.x
 }
@@ -62,6 +72,12 @@ func (p Player) X() float64 {
 func (p Player) Y() float64 {
 	return p.y
 }
+
+func (p Player) RotationAngle() float64 {
+	return p.rotationAngle
+}
+
+/* Setters */
 
 func (p *Player) SetX(x float64) {
 	p.x = x
@@ -87,10 +103,9 @@ func (p *Player) DecY(y float64) {
 	p.y -= y
 }
 
-func (p Player) RotationAngle() float64 {
-	return p.rotationAngle
-}
-
+// Render takes a pointer to a renderer and
+// draws the player object and a guiding line
+// the size is controlled by the minimapScale fieled
 func (p *Player) Render(r *sdl.Renderer) {
 	r.SetDrawColor(255, 255, 255, 255)
 	playerRect := sdl.Rect{
@@ -109,6 +124,9 @@ func (p *Player) Render(r *sdl.Renderer) {
 	)
 }
 
+// SetWalkDirection takes a string and matches it to the corresponding enum value
+// the matched value is then used to set the field accordingly
+// if no matc is found an error is returned
 func (p *Player) SetWalkDirection(direction string) error {
 	switch strings.ToLower(direction) {
 	case "neutral":
@@ -124,6 +142,9 @@ func (p *Player) SetWalkDirection(direction string) error {
 	return nil
 }
 
+// SetTurnirection takes a string and matches it to the corresponding enum value
+// the matched value is then used to set the field accordingly
+// if no matc is found an error is returned
 func (p *Player) SetTurnDirection(direction string) error {
 	switch strings.ToLower(direction) {
 	case "neutral":
@@ -139,6 +160,10 @@ func (p *Player) SetTurnDirection(direction string) error {
 	return nil
 }
 
+// Move changes the value of the x and y fiels of a player object
+// to new values considering the turn and walk speeds
+// accounting fot the delta time
+// and checking for collision into the new position
 func (p *Player) Move(delta float64, g *game.Game) {
 	p.rotationAngle += float64(p.turnDirection) * p.turnSpeed * delta
 	distance := float64(p.walkDirection) * p.walkSpeed * delta
