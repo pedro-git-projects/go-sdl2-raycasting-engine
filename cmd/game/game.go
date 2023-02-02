@@ -31,7 +31,7 @@ func Default() *Game {
 	tileSiz := int32(64)
 	width := cols * tileSiz
 	height := rows * tileSiz
-	fov := (60 * (math.Pi / 180))
+	fov := 60 * (math.Pi / 180)
 	dist := ((float64(width) / 2) / (math.Tan(fov / 2)))
 	numRays := cols * tileSiz
 	rays := make([]ray.Ray, numRays)
@@ -42,7 +42,7 @@ func Default() *Game {
 		rows:              rows,
 		cols:              cols,
 		minimapScale:      0.3,
-		numRays:           cols * tileSiz,
+		numRays:           width,
 		fovAngle:          fov,
 		gameMap:           initializeGameMap(),
 		fps:               framesPerSecond,
@@ -136,11 +136,9 @@ func (g *Game) RenderMap(r *sdl.Renderer) {
 			tileX := j * g.tileSize
 			tileY := i * g.tileSize
 
-			var tileColor uint8
+			var tileColor uint8 = 0
 			if g.gameMap[i][j] != 0 {
 				tileColor = 255
-			} else {
-				tileColor = 0
 			}
 
 			r.SetDrawColor(tileColor, tileColor, tileColor, 255)
@@ -156,15 +154,12 @@ func (g *Game) RenderMap(r *sdl.Renderer) {
 }
 
 func (g *Game) IsSolidCoordinate(x, y float64) bool {
-	if x < 0 || x >= float64(g.cols)*float64(g.tileSize) || y < 0 || y >= float64(g.rows)*float64(g.tileSize) {
+	if x < 0 || x >= float64(g.windowWidth) ||
+		y < 0 || y > float64(g.windowHeight) {
 		return true
 	}
 
-	indX := math.Floor(x / float64(g.tileSize))
-	indY := math.Floor(y / float64(g.tileSize))
-	if g.gameMap[int(indY)][int(indX)] != 0 {
-		return true
-	}
-
-	return false
+	indX := int(math.Floor(x / float64(g.tileSize)))
+	indY := int(math.Floor(y / float64(g.tileSize)))
+	return g.gameMap[indY][indX] != 0
 }

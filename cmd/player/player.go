@@ -100,11 +100,12 @@ func (p *Player) Render(r *sdl.Renderer) {
 		H: int32(p.height * p.minimapScale),
 	}
 	r.FillRect(&playerRect)
+	length := 40
 	r.DrawLine(
 		int32(p.minimapScale*p.x),
 		int32(p.minimapScale*p.y),
-		int32(p.minimapScale*p.x+math.Cos(p.rotationAngle)*40),
-		int32(p.minimapScale*p.y+math.Sin(p.rotationAngle)*40),
+		int32(p.minimapScale*p.x+math.Cos(p.rotationAngle)*float64(length)),
+		int32(p.minimapScale*p.y+math.Sin(p.rotationAngle)*float64(length)),
 	)
 }
 
@@ -141,8 +142,8 @@ func (p *Player) SetTurnDirection(direction string) error {
 func (p *Player) Move(delta float64, g *game.Game) {
 	p.rotationAngle += float64(p.turnDirection) * p.turnSpeed * delta
 	distance := float64(p.walkDirection) * p.walkSpeed * delta
-	newX := p.x + (math.Cos(p.rotationAngle))*distance
-	newY := p.y + (math.Sin(p.rotationAngle))*distance
+	newX := p.x + math.Cos(p.rotationAngle)*distance
+	newY := p.y + math.Sin(p.rotationAngle)*distance
 	if !g.IsSolidCoordinate(newX, newY) {
 		p.SetX(newX)
 		p.SetY(newY)
