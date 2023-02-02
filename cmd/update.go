@@ -3,7 +3,6 @@ package main
 import (
 	"time"
 
-	"github.com/pedro-git-projects/go-raycasting/cmd/ray/cast"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -17,5 +16,5 @@ func (app *App) update() {
 	deltaTime := (float64(sdl.GetTicks64() - app.game.TicksLastFrame())) / 1000.0
 	app.game.SetTicksLastFrame(sdl.GetTicks64())
 	app.player.Move(deltaTime, app.game)
-	cast.CastRays(app.game, app.player)
+	app.CastRays()
 }

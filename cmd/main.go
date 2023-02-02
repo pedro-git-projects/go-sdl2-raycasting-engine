@@ -9,7 +9,7 @@ func main() {
 
 	defer app.destructor()
 
-	for app.Running() {
+	for app.IsRunning() {
 		app.processInput()
 		app.update()
 		app.render()

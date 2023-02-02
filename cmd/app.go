@@ -72,15 +72,19 @@ func (app *App) initialize() error {
 	return nil
 }
 
+// destructor frees system resources and destroys the window
+// it should be called in a defer statement
 func (app *App) destructor() {
 	sdl.Quit()
 	app.window.Destroy()
 }
 
-func (app *App) Running() bool {
+// IsRunning is an accessor for the running field
+func (app *App) IsRunning() bool {
 	return app.isRunning
 }
 
+// SetRunning is a setter for the isRunning filed
 func (app *App) SetRunning(isRunning bool) {
 	app.isRunning = isRunning
 }
