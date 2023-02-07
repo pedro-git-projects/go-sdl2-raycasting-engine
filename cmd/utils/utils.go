@@ -2,6 +2,7 @@ package utils
 
 import "math"
 
+// DistanceBetweenPoints calculates the distance between two 2D coordiantes
 func DistanceBetweenPoints(x0, y0, x1, y1 float64) float64 {
 	return math.Sqrt((x1-x0)*(x1-x0) + (y1-y0)*(y1-y0))
 }
