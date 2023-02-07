@@ -1,3 +1,4 @@
+// utils stores helper functions that may be useful outside of this project
 package utils
 
 import "math"

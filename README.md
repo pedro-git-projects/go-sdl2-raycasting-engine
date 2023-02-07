@@ -3,10 +3,9 @@
 #### Table of Contents
   * [What is Raycasting](#what-is-raycasting)
   * [What is SDL](#what-is-sdl)
-  * [Implementation](#implementation)
   * [Project Structure](#project-structure)
   * [Installing and Running](#installing-and-running)
-  * [Release](#release)
+  * [Documentation](#documentation)
   * [Todo](#todo)
 
 ## What is Raycasting
@@ -25,14 +24,53 @@ Simple DirectMedia Layer is a cross-platform development library designed to pro
 
 Here Go bindings were used to call the SDL library from Go source code.
 
-## Implementation
-
 
 ## Project Structure
 
+| Folder         | Purpose                                                                                                     |
+|----------------|-------------------------------------------------------------------------------------------------------------|
+| cmd            | stores application specific files and folders                                                               |
+| cmd/root       | stores the app struct as well as app receiver functions, which constitute most of the application logic     |
+| cmd/color      | stores the color buffer type, constructor, accessors and receivers                                          |
+| cmd/game       | stores the Game struct, including the map and rays slice                                                    |
+| cmd/player     | stores the turn and walk direction enums as well as the Player struct and associated functions              |
+| cmd/ray        | stores the Ray struct, associated functions                                                                 |
+| cmd/timekeeper | stores all application data relating to framerate, frame time and update pace                               |
+| cmd/utils      | stores helper functions such as for calculating the distance between 2D coordinates and angle normalization |
+| cmd/window     | stores constants and variables relating to the window dimensions, and number of rays                        |
 
 ## Installing and Running 
 
-## Release
+If you're going to build the program from source you'll need to install the following dependencies:
+
+- [Go v1.13+](https://go.dev/dl/)
+- [SDL2](https://github.com/libsdl-org/SDL/releases)
+- [GNU Make(optional)](https://www.gnu.org/software/make/#download)
+
+Once you have this requirements fullfilled it is enough to run:
+
+```
+$ make install 
+```
+
+Then
+
+```
+$ make run
+```
+
+Else you can download a pre compiled binary from this repository releases
+
+## Documentation
+
+To see the documentation run
+
+```
+$ make doc
+```
 
 ## Todo
+
+- Add textures
+
+- Compile linux, windows and mac releases

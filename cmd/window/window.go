@@ -1,3 +1,6 @@
+// the window pacakge stores all global consts and variables
+// relating to window dimensions, field of view to be rendered
+// and number of rays to be drawn
 package window
 
 import "math"

@@ -1,3 +1,4 @@
+// ray stores the Ray datatype as well as its receivers, constructors and accessors
 package ray
 
 import (

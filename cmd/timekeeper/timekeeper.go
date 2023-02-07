@@ -1,3 +1,5 @@
+// timekeepr stores all datatypes, constants, variables and functions relating to
+// framerate, frametime and update pacing
 package timekeeper
 
 import (

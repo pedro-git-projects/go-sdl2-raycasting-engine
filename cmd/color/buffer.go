@@ -1,3 +1,5 @@
+// color stores the unsafe color buffer data type as well as it's
+// associated function
 package color
 
 import (

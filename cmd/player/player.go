@@ -1,3 +1,4 @@
+// player stores the player struct as well as the turn and walk direction enums
 package player
 
 import (
@@ -16,12 +17,14 @@ type turnDirection int
 // walkDirection is the type used in the enum for the player walk direction
 type walkDirection int
 
+// turnDirection enum instantiation
 const (
 	turnNeutral turnDirection = 0
 	left        turnDirection = -1
 	right       turnDirection = 1
 )
 
+// walkDirection enum instantiation
 const (
 	walkNeutral walkDirection = 0
 	foward      walkDirection = 1

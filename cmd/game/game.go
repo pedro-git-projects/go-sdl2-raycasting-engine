@@ -1,3 +1,5 @@
+// game represents objects and functions that are directly
+// intertwined with game logic, particularly the gameMap and ray slice
 package game
 
 import (
@@ -8,9 +10,8 @@ import (
 )
 
 type Game struct {
-	gameMap           [][]int32
-	distanceProjPlane float64
-	rays              []ray.Ray
+	gameMap [][]int32
+	rays    []ray.Ray
 }
 
 // Default creates a game object with its fields populated by the
@@ -18,9 +19,8 @@ type Game struct {
 func Default() *Game {
 	rays := make([]ray.Ray, window.NumRays)
 	g := &Game{
-		gameMap:           initializeGameMap(),
-		distanceProjPlane: window.DistanceProjPlane,
-		rays:              rays,
+		gameMap: initializeGameMap(),
+		rays:    rays,
 	}
 	return g
 }
@@ -57,10 +57,6 @@ func (g Game) TileSize() int32 {
 
 func (g Game) GameMap() [][]int32 {
 	return g.gameMap
-}
-
-func (g Game) DistanceProjectionPlane() float64 {
-	return g.distanceProjPlane
 }
 
 // IsSolidCoordinate tests if a point x,y is solid
