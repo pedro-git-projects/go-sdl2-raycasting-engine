@@ -7,8 +7,8 @@ func (app *App) render() {
 
 	app.colorBuffer.Generate3DProjection(app.game, app.player)
 
-	app.colorBuffer.Render(app.game, app.renderer)
-	app.colorBuffer.Clear(0xFF000000, app.game)
+	app.colorBuffer.Render(app.renderer)
+	app.colorBuffer.Clear(0xFF000000)
 
 	app.game.RenderMap(app.renderer)
 	app.RenderRays()

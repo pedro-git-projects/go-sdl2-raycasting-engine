@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/pedro-git-projects/go-raycasting/cmd/game"
+	"github.com/pedro-git-projects/go-raycasting/cmd/window"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -47,10 +48,10 @@ type Player struct {
 // with neutral turn and walk diretion
 // 100 pixel walkspeed and 45 radians turning
 // the default minimapScaling is 0.3
-func New(x, y float64) *Player {
+func Default() *Player {
 	p := &Player{
-		x:             x,
-		y:             y,
+		x:             float64(window.Width / 2),
+		y:             float64(window.Height / 2),
 		width:         1,
 		height:        1,
 		turnDirection: turnNeutral,
@@ -58,7 +59,7 @@ func New(x, y float64) *Player {
 		rotationAngle: math.Pi / 2,
 		walkSpeed:     100,
 		turnSpeed:     45 * (math.Pi / 180),
-		minimapScale:  game.MinimapScaling,
+		minimapScale:  window.MinimapScaling,
 	}
 	return p
 }
