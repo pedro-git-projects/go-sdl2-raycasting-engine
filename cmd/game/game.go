@@ -5,7 +5,6 @@ import (
 
 	"github.com/pedro-git-projects/go-raycasting/cmd/ray"
 	"github.com/pedro-git-projects/go-raycasting/cmd/window"
-	"github.com/veandco/go-sdl2/sdl"
 )
 
 type Game struct {
@@ -70,40 +69,6 @@ func (g Game) GameMap() [][]int32 {
 
 func (g Game) DistanceProjectionPlane() float64 {
 	return g.distanceProjPlane
-}
-
-// RenderMap renders the game minimap as well as a rectangle behind it
-// so as not to let the walls be seen through the tile gaps
-func (g *Game) RenderMap(r *sdl.Renderer) {
-	r.SetDrawColor(0, 0, 0, 255)
-	r.FillRect(&sdl.Rect{
-		X: 0,
-		Y: 0,
-		W: int32(math.Floor(window.MinimapScaling * (float64(window.NumCols) * float64(window.TileSize)))),
-		H: int32(math.Floor(window.MinimapScaling * (float64(window.NumRows) * float64(window.TileSize)))),
-	})
-
-	for i := int32(0); i < window.NumRows; i++ {
-		for j := int32(0); j < window.NumCols; j++ {
-
-			tileX := j * window.TileSize
-			tileY := i * window.TileSize
-
-			var tileColor uint8 = 0
-			if g.gameMap[i][j] != 0 {
-				tileColor = 255
-			}
-
-			r.SetDrawColor(tileColor, tileColor, tileColor, 255)
-			mapTileRect := sdl.Rect{
-				X: int32(float64(tileX) * window.MinimapScaling),
-				Y: int32(float64(tileY) * window.MinimapScaling),
-				W: int32(math.Floor(float64(window.TileSize) * window.MinimapScaling)),
-				H: int32(math.Floor(float64(window.TileSize) * window.MinimapScaling)),
-			}
-			r.FillRect(&mapTileRect)
-		}
-	}
 }
 
 // IsSolidCoordinate tests if a point x,y is solid

@@ -165,15 +165,3 @@ func (app *App) CastRays() {
 		app.CastRay(angle, col)
 	}
 }
-
-func (app *App) RenderRays() {
-	app.renderer.SetDrawColor(255, 0, 0, 255)
-	for i := 0; i < int(window.NumRays); i++ {
-		app.renderer.DrawLine(
-			int32(window.MinimapScaling*app.player.X()),
-			int32(window.MinimapScaling*app.player.Y()),
-			int32(window.MinimapScaling*app.game.Rays()[i].XCollision()),
-			int32(window.MinimapScaling*app.game.Rays()[i].YCollision()),
-		)
-	}
-}
