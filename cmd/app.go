@@ -6,6 +6,8 @@ import (
 	"github.com/pedro-git-projects/go-raycasting/cmd/color"
 	"github.com/pedro-git-projects/go-raycasting/cmd/game"
 	"github.com/pedro-git-projects/go-raycasting/cmd/player"
+	"github.com/pedro-git-projects/go-raycasting/cmd/timekeeper"
+	"github.com/pedro-git-projects/go-raycasting/cmd/window"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -18,6 +20,7 @@ type App struct {
 	renderer    *sdl.Renderer
 	colorBuffer *color.Buffer
 	player      *player.Player
+	timer       *timekeeper.TimeKeeper
 	isRunning   bool
 }
 
@@ -25,10 +28,12 @@ type App struct {
 // other fields must be populated by calling initializeWindow
 func newApp() *App {
 	g := game.Default()
-	p := player.New(float64(g.WindowWidth())/2, float64(g.WindowHeight())/2)
+	p := player.Default()
+	t := timekeeper.Default()
 	a := &App{
 		game:   g,
 		player: p,
+		timer:  t,
 	}
 	return a
 }
@@ -44,8 +49,8 @@ func (app *App) initialize() error {
 		"raycasting",
 		sdl.WINDOWPOS_CENTERED,
 		sdl.WINDOWPOS_CENTERED,
-		app.game.WindowWidth(),
-		app.game.WindowHeight(),
+		window.Width,
+		window.Height,
 		sdl.WINDOW_BORDERLESS,
 	)
 	if err != nil {
@@ -64,7 +69,7 @@ func (app *App) initialize() error {
 		return err
 	}
 
-	colorBuffer := color.New(rendeder, app.game)
+	colorBuffer := color.New(rendeder)
 	app.colorBuffer = colorBuffer
 
 	app.SetRunning(true)

@@ -5,6 +5,7 @@ import (
 
 	"github.com/pedro-git-projects/go-raycasting/cmd/ray"
 	"github.com/pedro-git-projects/go-raycasting/cmd/utils"
+	"github.com/pedro-git-projects/go-raycasting/cmd/window"
 )
 
 // horizontalIntersectionResult represents the data expected when calculating the horizontal intersection
@@ -54,9 +55,9 @@ func (app *App) calculateHorizontalIntersection(ray *ray.Ray) *horizontalInterse
 
 	// increments xstep and ystep until a wall collision
 	for nextHorzXCollision >= 0 &&
-		nextHorzXCollision <= float64(app.game.WindowWidth()) &&
+		nextHorzXCollision <= float64(window.Width) &&
 		nextHorzYCollision >= 0 &&
-		nextHorzYCollision <= float64(app.game.WindowHeight()) {
+		nextHorzYCollision <= float64(window.Height) {
 
 		xToCheck := nextHorzXCollision
 		yToCheck := nextHorzYCollision
@@ -103,9 +104,9 @@ func (app *App) calculateVerticalIntersection(ray *ray.Ray) *verticalIntersectio
 	nextVertYCollision := yIntersection
 
 	for nextVertXCollision >= 0 &&
-		nextVertXCollision <= float64(app.game.WindowWidth()) &&
+		nextVertXCollision <= float64(window.Width) &&
 		nextVertYCollision >= 0 &&
-		nextVertYCollision <= float64(app.game.WindowHeight()) {
+		nextVertYCollision <= float64(window.Height) {
 
 		xToCheck := nextVertXCollision
 		if ray.IsFacingLeft() {
@@ -159,20 +160,8 @@ func (app *App) CastRay(angle float64, rayId int) {
 }
 
 func (app *App) CastRays() {
-	for col := 0; col < int(app.game.NumRays()); col++ {
-		angle := app.player.RotationAngle() + math.Atan((float64(col)-float64(app.game.NumRays())/2)/float64(app.game.DistanceProjectionPlane()))
+	for col := 0; col < int(window.NumRays); col++ {
+		angle := app.player.RotationAngle() + math.Atan((float64(col)-float64(window.NumRays)/2)/float64(window.DistanceProjPlane))
 		app.CastRay(angle, col)
-	}
-}
-
-func (app *App) RenderRays() {
-	app.renderer.SetDrawColor(255, 0, 0, 255)
-	for i := 0; i < int(app.game.NumRays()); i++ {
-		app.renderer.DrawLine(
-			int32(app.game.MinimapScale()*app.player.X()),
-			int32(app.game.MinimapScale()*app.player.Y()),
-			int32(app.game.MinimapScale()*app.game.Rays()[i].XCollision()),
-			int32(app.game.MinimapScale()*app.game.Rays()[i].YCollision()),
-		)
 	}
 }

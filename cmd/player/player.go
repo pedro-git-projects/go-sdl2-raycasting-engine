@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/pedro-git-projects/go-raycasting/cmd/game"
-	"github.com/veandco/go-sdl2/sdl"
+	"github.com/pedro-git-projects/go-raycasting/cmd/window"
 )
 
 // turnDirection is the type used in the enum for the player turn direction
@@ -47,10 +47,10 @@ type Player struct {
 // with neutral turn and walk diretion
 // 100 pixel walkspeed and 45 radians turning
 // the default minimapScaling is 0.3
-func New(x, y float64) *Player {
+func Default() *Player {
 	p := &Player{
-		x:             x,
-		y:             y,
+		x:             float64(window.Width / 2),
+		y:             float64(window.Height / 2),
 		width:         1,
 		height:        1,
 		turnDirection: turnNeutral,
@@ -58,7 +58,7 @@ func New(x, y float64) *Player {
 		rotationAngle: math.Pi / 2,
 		walkSpeed:     100,
 		turnSpeed:     45 * (math.Pi / 180),
-		minimapScale:  game.MinimapScaling,
+		minimapScale:  window.MinimapScaling,
 	}
 	return p
 }
@@ -71,6 +71,14 @@ func (p Player) X() float64 {
 
 func (p Player) Y() float64 {
 	return p.y
+}
+
+func (p Player) Width() float64 {
+	return p.width
+}
+
+func (p Player) Height() float64 {
+	return p.height
 }
 
 func (p Player) RotationAngle() float64 {
@@ -101,27 +109,6 @@ func (p *Player) DecX(x float64) {
 
 func (p *Player) DecY(y float64) {
 	p.y -= y
-}
-
-// Render takes a pointer to a renderer and
-// draws the player object and a guiding line
-// the size is controlled by the minimapScale fieled
-func (p *Player) Render(r *sdl.Renderer) {
-	r.SetDrawColor(255, 255, 255, 255)
-	playerRect := sdl.Rect{
-		X: int32(p.x * p.minimapScale),
-		Y: int32(p.y * p.minimapScale),
-		W: int32(p.width * p.minimapScale),
-		H: int32(p.height * p.minimapScale),
-	}
-	r.FillRect(&playerRect)
-	length := 40
-	r.DrawLine(
-		int32(p.minimapScale*p.x),
-		int32(p.minimapScale*p.y),
-		int32(p.minimapScale*p.x+math.Cos(p.rotationAngle)*float64(length)),
-		int32(p.minimapScale*p.y+math.Sin(p.rotationAngle)*float64(length)),
-	)
 }
 
 // SetWalkDirection takes a string and matches it to the corresponding enum value
