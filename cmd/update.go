@@ -1,20 +1,21 @@
 package main
 
 import (
-	"time"
-
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 // update gets the durations since SDL started and compensates for the
-// difference between the actual framerate and the frametime, or time between frames// by wasting time away when the game is running too fast
+// difference between the actual framerate and the frametime, or time between frames
+// by wasting time away when the game is running too fast
 func (app *App) update() {
-	timeToWait := app.timer.FrameTime() - (sdl.GetTicks64() - app.game.TicksLastFrame())
-	if timeToWait > 0 && timeToWait <= app.timer.FrameTime() {
-		time.Sleep(time.Duration(timeToWait) * time.Millisecond)
+	app.timer.CalculateWaitTime()
+
+	if app.timer.WaitTime() > 0 && app.timer.WaitTime() <= app.timer.FrameTime() {
+		sdl.Delay(uint32(app.timer.WaitTime())) //	time.Sleep(time.Duration(app.timer.WaitTime()) * time.Millisecond)
 	}
-	deltaTime := (float64(sdl.GetTicks64() - app.game.TicksLastFrame())) / 1000.0
-	app.game.SetTicksLastFrame(sdl.GetTicks64())
-	app.player.Move(deltaTime, app.game)
+
+	app.timer.CalculateDelta()
+	app.timer.SetTicks(sdl.GetTicks64())
+	app.player.Move(app.timer.DeltaTime(), app.game)
 	app.CastRays()
 }

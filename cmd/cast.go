@@ -127,7 +127,9 @@ func (app *App) calculateVerticalIntersection(ray *ray.Ray) *verticalIntersectio
 	return r
 }
 
-func (app *App) CastRay(angle float64, rayId int) {
+// castRay gets the resulv of horizontal and vertical intersections and uses it to populate a ray from the rays
+// array properly
+func (app *App) castRay(angle float64, rayId int) {
 	app.game.Rays()[rayId] = *ray.New(angle)
 	ray := app.game.Rays()[rayId]
 
@@ -159,9 +161,10 @@ func (app *App) CastRay(angle float64, rayId int) {
 	}
 }
 
+// CastRays accounts for FOV distortion and calls CastRay as many times as there are rays
 func (app *App) CastRays() {
 	for col := 0; col < int(window.NumRays); col++ {
 		angle := app.player.RotationAngle() + math.Atan((float64(col)-float64(window.NumRays)/2)/float64(window.DistanceProjPlane))
-		app.CastRay(angle, col)
+		app.castRay(angle, col)
 	}
 }

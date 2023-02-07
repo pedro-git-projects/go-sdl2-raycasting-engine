@@ -8,8 +8,6 @@ import (
 )
 
 type Game struct {
-	tileSize          int32
-	ticksLastFrame    uint64
 	gameMap           [][]int32
 	distanceProjPlane float64
 	rays              []ray.Ray
@@ -20,9 +18,7 @@ type Game struct {
 func Default() *Game {
 	rays := make([]ray.Ray, window.NumRays)
 	g := &Game{
-		tileSize:          window.TileSize,
 		gameMap:           initializeGameMap(),
-		ticksLastFrame:    0,
 		distanceProjPlane: window.DistanceProjPlane,
 		rays:              rays,
 	}
@@ -50,10 +46,6 @@ func initializeGameMap() [][]int32 {
 }
 
 /* Accessors */
-
-func (g Game) TicksLastFrame() uint64 {
-	return g.ticksLastFrame
-}
 
 func (g Game) Rays() []ray.Ray {
 	return g.rays
@@ -83,9 +75,4 @@ func (g *Game) IsSolidCoordinate(x, y float64) bool {
 	indX := int(math.Floor(x / float64(window.TileSize)))
 	indY := int(math.Floor(y / float64(window.TileSize)))
 	return g.gameMap[indY][indX] != 0
-}
-
-// Mutator
-func (g *Game) SetTicksLastFrame(t uint64) {
-	g.ticksLastFrame = t
 }
